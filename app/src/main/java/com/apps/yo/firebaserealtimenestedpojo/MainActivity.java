@@ -13,6 +13,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     DatabaseReference dbRef;
@@ -26,34 +29,33 @@ public class MainActivity extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance().getReference("NestedPOJO/Students");
     }
 
-    public void AddNestedData(View v){
-        String name ="oho";
+    public void AddNestedData(View v) {
+        String name = "oho";
         int marks = 15;
 
         String uniqueId = dbRef.push().getKey();
 
-        Student s = new Student(uniqueId,name,marks);
-        s.setAddress(new Address("at home","work work.."));
-        s.setTelephone(new Telephone("123","999"));
+        Student s = new Student(uniqueId, name, marks);
+        s.setAddress(new Address("at home", "work work.."));
+        s.setTelephone(new Telephone("123", "999"));
 
         dbRef.child(uniqueId).setValue(s);
 
     }
 
-    public void ReadNestedData(View v){
-        s=null;
+    public void ReadNestedData(View v) {
+        s = null;
         DatabaseReference dbref2 = FirebaseDatabase.getInstance().getReference("NestedPOJO/Students");
 
         dbref2.child("-LhjUbt4zl2_RKhYRW1h").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               Log.e("SNAPSHOT", dataSnapshot.toString());
+                Log.e("SNAPSHOT", dataSnapshot.toString());
                 s = dataSnapshot.getValue(Student.class);
-                if(s.getTelephone()==null){
+                if (s.getTelephone() == null) {
                     Log.e("SNAPSHOT", "it is null");//-LhjTPz5M6xuxP3_ROc5 ....gives null
-                }
-                else {
-                    Log.e("SNAPSHOT",s.getName() +"|"+ s.getTelephone().getWork()); //-LhjUbt4zl2_RKhYRW1h ...has Telephone obj
+                } else {
+                    Log.e("SNAPSHOT", s.getName() + "|" + s.getTelephone().getWork()); //-LhjUbt4zl2_RKhYRW1h ...has Telephone obj
                 }
             }
 
@@ -66,15 +68,12 @@ public class MainActivity extends AppCompatActivity {
 
     //while checking Parcable only use the one who has the telephone Object.
 
-    public void Send2NextActivity(View v){
+    public void Send2NextActivity(View v) {
 
         Intent i = new Intent(this, Main2Activity.class);
-        i.putExtra("myObject",s);
+        i.putExtra("myObject", s);
         startActivity(i);
     }
-
-}
-
 //==================================================================
 //the reason the below code fails is because
 // one entry has everything of the nested POJO, while another doesnt have TelePhone & Address data entered
@@ -97,3 +96,28 @@ public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
         }
 }
 */
+
+    public void SimplePojo2NextActivity(View v) {
+        SimplePojo s = new SimplePojo(15,"Yohan");
+
+        Intent i = new Intent(this, Main2Activity.class);
+        i.putExtra("myObject", s);
+        startActivity(i);
+    }
+
+    public void SimplePojoArrayListSend(View v) {
+        SimplePojo s = new SimplePojo(15,"Yohan");
+        SimplePojo s1 = new SimplePojo(115,"Yohannan");
+        SimplePojo s2 = new SimplePojo(155,"Yohanooooo");
+
+        ArrayList<SimplePojo> arrlist = new ArrayList<>();//cant use list = new ArrayList
+        arrlist.add(s);
+        arrlist.add(s1);
+        arrlist.add(s2);
+
+        Intent i = new Intent(this, Main2Activity.class);
+        i.putParcelableArrayListExtra("myArrList",arrlist);
+        startActivity(i);
+    }
+
+}
